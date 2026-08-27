@@ -1,0 +1,1483 @@
+<!-- Fullscreen Celestial Transition Overlay -->
+@if (isTransitioning()) {
+  <div class="fixed inset-0 z-50 bg-[#050917] flex flex-col items-center justify-center text-center p-6 animate-fade-in text-white select-none">
+    <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-[#ffd166] via-[#ffaa00] to-[#0077b6] flex items-center justify-center text-[#090e24] mb-6 shadow-[0_0_50px_rgba(255,209,102,0.5)] animate-spin">
+      <mat-icon class="text-5xl">auto_awesome</mat-icon>
+    </div>
+    <h3 class="font-serif text-2xl sm:text-4xl font-bold text-[#fffae6] mb-2 tracking-tight">
+      {{ currentTheme() === 'watercolor' ? 'Pintando las estrellas de Saint-Rémy...' : 'Preparando el lienzo de acuarela pura...' }}
+    </h3>
+    <p class="text-sm sm:text-base text-[#ffd166] font-serif italic max-w-md">
+      "No sé nada con certeza, pero ver las estrellas me hace soñar con mi mayor obra de arte: Aranxita."
+    </p>
+  </div>
+}
+
+<!-- ========================================================================= -->
+<!-- ======================= PARTE I: ACUARELA PURA ========================== -->
+<!-- ========================================================================= -->
+@if (currentTheme() === 'watercolor') {
+
+  <!-- Procedural Live Watercolor Background & Flowing Cursor Particles -->
+  <app-background-stains></app-background-stains>
+
+  <!-- Global Envelope Modal -->
+  @if (isLetterOpen()) {
+    <app-love-letter-modal (closeModal)="closeLetter()"></app-love-letter-modal>
+  }
+
+  <!-- Detailed Artwork Modal -->
+  @if (selectedArtwork(); as art) {
+    <div
+      role="dialog"
+      aria-modal="true"
+      tabindex="0"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/45 backdrop-blur-sm animate-fade-in"
+      (click)="onArtworkBackdropClick($event)"
+      (keydown.escape)="closeArtwork()">
+      <div
+        class="relative w-full max-w-xl bg-[#faf6f0] rounded-2xl border border-[#ebd8ca] shadow-2xl p-6 sm:p-8 overflow-hidden text-[#2e2323]">
+        <!-- Background Watercolor Glow -->
+        <div
+          class="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none"
+          [style.background-color]="art.themeColor">
+        </div>
+
+        <button
+          type="button"
+          (click)="closeArtwork()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/80 border border-[#e2d2c5] text-[#6d5555] hover:bg-[#faeee3] hover:text-[#9f4e5e] transition flex items-center justify-center shadow-sm">
+          <mat-icon class="text-xl">close</mat-icon>
+        </button>
+
+        <!-- Art Header -->
+        <div class="mb-4">
+          <span
+            class="inline-block px-3 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 border"
+            [style.color]="art.themeColor"
+            [style.border-color]="art.themeColor + '40'"
+            [style.background-color]="art.themeColor + '15'">
+            {{ art.paletteName }}
+          </span>
+          <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#352525]">{{ art.title }}</h3>
+          <p class="font-script text-xl text-[#9f4e5e]">{{ art.subtitle }}</p>
+        </div>
+
+        <!-- Simulated Large Organic Watercolor Stain -->
+        <div
+          class="relative w-full h-44 sm:h-52 rounded-xl mb-6 flex items-center justify-center overflow-hidden border border-[#e6d8ce]"
+          [class]="'bg-gradient-to-tr ' + art.bgGradient">
+          <!-- Multi-layered Watercolor Blooms -->
+          <div
+            class="absolute w-44 h-44 rounded-full blur-xl opacity-70 animate-pulse"
+            [style.background-color]="art.stainColors[0]">
+          </div>
+          <div
+            class="absolute w-36 h-36 rounded-full blur-2xl opacity-60 translate-x-8 -translate-y-4"
+            [style.background-color]="art.stainColors[1]">
+          </div>
+          <div
+            class="absolute w-28 h-28 rounded-full blur-lg opacity-50 -translate-x-6 translate-y-6"
+            [style.background-color]="art.stainColors[2]">
+          </div>
+
+          <div class="relative z-10 text-center px-4 max-w-sm">
+            <p class="font-serif italic text-base sm:text-lg text-[#3d2727] font-medium drop-shadow-sm">
+              {{ art.quote }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <p class="text-sm sm:text-base text-[#523e3e] leading-relaxed mb-6 font-normal">
+          {{ art.description }}
+        </p>
+
+        <div class="flex items-center justify-between pt-4 border-t border-[#ebdcd0]">
+          <div class="flex items-center gap-1.5">
+            @for (tag of art.tags; track tag) {
+              <span class="px-2.5 py-1 rounded-md bg-[#f2e7dd] text-[#6d5555] text-xs font-medium">
+                #{{ tag }}
+              </span>
+            }
+          </div>
+
+          <button
+            type="button"
+            (click)="closeArtwork()"
+            class="px-4 py-2 rounded-xl bg-[#d97d8b] hover:bg-[#c86b79] text-white text-xs font-medium transition shadow-sm">
+            Volver a la galería
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="relative z-10 min-h-screen flex flex-col selection:bg-[#f28482]/30 selection:text-[#5a2a35]">
+
+    <!-- ==================== HEADER / BARRA SUPERIOR ==================== -->
+    <header class="sticky top-0 z-40 bg-[#faf6f0]/85 backdrop-blur-md border-b border-[#ebdcd0]/70 transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+        
+        <!-- Brand Logo / Dedication title -->
+        <a
+          href="#hero"
+          (click)="$event.preventDefault(); scrollTo('hero')"
+          class="flex items-center gap-3 group focus:outline-none">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f28482] via-[#f6bd60] to-[#a084ca] p-0.5 shadow-sm group-hover:rotate-12 transition-transform duration-500">
+            <div class="w-full h-full rounded-full bg-[#faf6f0] flex items-center justify-center text-[#c85a70]">
+              <mat-icon class="text-xl">brush</mat-icon>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-cinzel text-lg sm:text-xl font-bold tracking-tight text-[#3b2727] group-hover:text-[#b85368] transition-colors">
+                Aranxita
+              </span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#d97d8b]"></span>
+            </div>
+            <p class="text-[11px] text-[#7d6666] tracking-wide font-normal -mt-0.5">
+              Parte I · Una carta en acuarela
+            </p>
+          </div>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+          <button
+            type="button"
+            id="nav-para-ti"
+            (click)="scrollTo('hero')"
+            [class.text-[#b85368]]="activeNav() === 'hero'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#5c4747] hover:text-[#b85368] transition-colors rounded-lg group">
+            <span>Para ti</span>
+            @if (activeNav() === 'hero') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#f28482]/60 rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            id="nav-inspiras"
+            (click)="scrollTo('lo-que-inspiras')"
+            [class.text-[#b85368]]="activeNav() === 'lo-que-inspiras'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#5c4747] hover:text-[#b85368] transition-colors rounded-lg group">
+            <span>Lo que inspiras</span>
+            @if (activeNav() === 'lo-que-inspiras') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#f28482]/60 rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            id="nav-galeria"
+            (click)="scrollTo('galeria')"
+            [class.text-[#b85368]]="activeNav() === 'galeria'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#5c4747] hover:text-[#b85368] transition-colors rounded-lg group">
+            <span>Galería</span>
+            @if (activeNav() === 'galeria') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#f28482]/60 rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            id="nav-pintar"
+            (click)="scrollTo('pintar')"
+            [class.text-[#b85368]]="activeNav() === 'pintar'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#5c4747] hover:text-[#b85368] transition-colors rounded-lg group">
+            <span>Pintar</span>
+            @if (activeNav() === 'pintar') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#f28482]/60 rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            id="nav-carta"
+            (click)="scrollTo('carta')"
+            [class.text-[#b85368]]="activeNav() === 'carta'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#5c4747] hover:text-[#b85368] transition-colors rounded-lg group">
+            <span>Carta</span>
+            @if (activeNav() === 'carta') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#f28482]/60 rounded-full blur-[1px]"></span>
+            }
+          </button>
+        </nav>
+
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Audio toggle -->
+          <button
+            type="button"
+            id="btn-sound-toggle"
+            (click)="toggleSound()"
+            [title]="isSoundMuted() ? 'Activar sonido' : 'Silenciar sonido'"
+            class="w-9 h-9 rounded-full bg-white/80 border border-[#e6d8ce] text-[#7d6666] hover:text-[#b85368] transition flex items-center justify-center shadow-xs">
+            <mat-icon class="text-base">{{ isSoundMuted() ? 'volume_off' : 'volume_up' }}</mat-icon>
+          </button>
+
+          <!-- Open letter CTA -->
+          <button
+            type="button"
+            id="btn-header-letter"
+            (click)="openLetter()"
+            class="px-3.5 py-1.5 rounded-full bg-[#d97d8b] hover:bg-[#c86b79] text-white text-xs font-medium shadow-sm hover:shadow transition flex items-center gap-1.5">
+            <mat-icon class="text-sm">favorite</mat-icon>
+            <span class="hidden sm:inline">Leer Carta</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ==================== CONTENIDO PRINCIPAL ACUARELA ==================== -->
+    <main class="flex-1">
+
+      <!-- ==================== SECCIÓN 1: HERO ==================== -->
+      <section id="hero" class="relative pt-12 pb-20 sm:pt-20 sm:pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Column (Text & Heartfelt Message) -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+              
+              <!-- Watercolor Tag -->
+              <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fdeef0] border border-[#f5ccd2] text-[#b85368] text-xs sm:text-sm font-semibold tracking-wide uppercase shadow-xs">
+                <span class="w-2 h-2 rounded-full bg-[#f28482] animate-ping"></span>
+                <span>Dedicado a Aranxita · Mi Obra de Arte</span>
+              </div>
+
+              <!-- Main Title -->
+              <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#311f1f] tracking-tight leading-[1.08]">
+                Eres una <br />
+                <span class="font-script text-5xl sm:text-7xl lg:text-8xl text-[#d97d8b] block sm:inline font-normal drop-shadow-xs">
+                  obra de arte
+                </span>
+              </h1>
+
+              <!-- Subtitle -->
+              <p class="text-base sm:text-xl text-[#634e4e] max-w-2xl font-light leading-relaxed">
+                Cada color, cada tono y cada pincelada de este espacio fue creado para recordarte lo hermosa, valiosa y profundamente especial que eres para mí.
+              </p>
+
+              <!-- Hero Actions -->
+              <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <button
+                  type="button"
+                  id="hero-read-letter-btn"
+                  (click)="openLetter()"
+                  class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#d97d8b] to-[#c85a70] hover:from-[#c86b79] hover:to-[#b84c60] text-white font-serif text-sm sm:text-base font-semibold shadow-md hover:shadow-lg transition-all flex items-center gap-2 group">
+                  <mat-icon class="text-lg group-hover:scale-110 transition-transform">favorite</mat-icon>
+                  <span>Leer Carta de Amor</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="hero-explore-gallery-btn"
+                  (click)="scrollTo('galeria')"
+                  class="px-6 py-3.5 rounded-2xl bg-white/80 hover:bg-white border border-[#e2d2c5] text-[#5c4545] hover:text-[#b85368] font-serif text-sm sm:text-base font-medium shadow-xs hover:shadow transition flex items-center gap-2">
+                  <mat-icon class="text-lg text-[#d97d8b]">palette</mat-icon>
+                  <span>Ver las Obras</span>
+                </button>
+              </div>
+
+              <!-- Romantic Quote Card -->
+              <div class="pt-4 max-w-xl mx-auto lg:mx-0">
+                <div class="p-4 rounded-2xl bg-white/70 backdrop-blur-xs border border-[#ebdcd0] shadow-xs flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-[#fdeef0] text-[#b85368] flex items-center justify-center shrink-0">
+                    <mat-icon class="text-lg">brush</mat-icon>
+                  </div>
+                  <p class="font-cormorant italic text-sm sm:text-base text-[#523e3e]">
+                    "En un mundo lleno de copias, tú eres un original irrepetible."
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column (Exquisite Masterpiece Watercolor Artwork & Dedication) -->
+            <div class="lg:col-span-5 relative">
+              
+              <!-- Layered Watercolor Fine Art Frame -->
+              <div class="relative w-full aspect-[4/5] sm:aspect-square lg:aspect-[4/5] rounded-3xl bg-[#fdfbf7] border-2 border-[#e5d5c7] shadow-2xl p-6 overflow-hidden flex flex-col justify-between deckled-paper">
+                
+                <!-- Watercolor Bleeds & Fine Pigment Splatters inside Frame -->
+                <div class="absolute -top-12 -right-12 w-72 h-72 bg-[#f72585]/30 rounded-full blur-3xl stain-blob pointer-events-none"></div>
+                <div class="absolute top-1/3 -left-16 w-64 h-64 bg-[#ffaa00]/25 rounded-full blur-3xl stain-blob-2 pointer-events-none"></div>
+                <div class="absolute -bottom-12 right-1/4 w-72 h-72 bg-[#7209b7]/25 rounded-full blur-3xl stain-blob pointer-events-none"></div>
+
+                <!-- Top museum artwork classification badge -->
+                <div class="relative z-10 flex items-center justify-between">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-[#9c7575] bg-white/80 px-2.5 py-1 rounded-full border border-[#ebdcd0] shadow-xs font-cinzel">
+                    Acuarela Fina · Edición Única
+                  </span>
+                  <span class="text-xs font-cormorant italic text-[#b85368] font-semibold">
+                    Opus I · 2026
+                  </span>
+                </div>
+
+                <!-- Organic Hand-painted Masterpiece Emblem -->
+                <div class="relative z-10 my-auto text-center py-4">
+                  <!-- Watercolor Ring & Botanical Bloom Emblem -->
+                  <div class="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto flex items-center justify-center mb-5">
+                    <!-- Outer Organic Watercolor Halo 1 -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-[#f72585]/40 via-[#ffaa00]/35 to-[#7209b7]/30 blur-md stain-blob"></div>
+                    <!-- Outer Organic Watercolor Halo 2 with rotation -->
+                    <div class="absolute inset-2 rounded-full bg-gradient-to-br from-[#ff007f]/35 via-[#06d6a0]/25 to-[#ff5400]/30 blur-sm stain-blob-2"></div>
+                    
+                    <!-- Kintsugi Gold Foil Ring Border -->
+                    <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[#fdfaf5] p-2 shadow-inner border border-[#e8d5c4] flex flex-col items-center justify-center group">
+                      <div class="absolute -top-1 right-3">
+                        <mat-icon class="text-xs text-[#d4af37]">flare</mat-icon>
+                      </div>
+                      <div class="absolute -bottom-1 left-3">
+                        <mat-icon class="text-xs text-[#b85368]">local_florist</mat-icon>
+                      </div>
+                      
+                      <mat-icon class="text-3xl sm:text-4xl text-[#f72585] mb-0.5">favorite</mat-icon>
+                      <span class="font-script text-3xl sm:text-4xl text-[#b85368] font-bold drop-shadow-xs">Aranxita</span>
+                      <span class="text-[9px] sm:text-[10px] uppercase font-bold text-[#8c6565] tracking-widest mt-0.5 font-cinzel">Obra Maestra</span>
+                    </div>
+                  </div>
+
+                  <span class="text-[11px] uppercase tracking-widest text-[#9c7d7d] font-bold flex items-center justify-center gap-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#f72585]"></span>
+                    <span>Pigmento y Agua Viva</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#ffaa00]"></span>
+                  </span>
+                  <h2 class="font-serif text-xl sm:text-2xl font-bold text-[#352020]">
+                    Pintado con devoción
+                  </h2>
+                </div>
+
+                <!-- Floating Handmade Fine Art Mat Note -->
+                <div class="relative z-20 bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-[#e6d8cc] shadow-md">
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full bg-[#fde2e8] text-[#9c184c] flex items-center justify-center shrink-0 shadow-inner">
+                      <mat-icon class="text-sm">format_quote</mat-icon>
+                    </div>
+                    <div>
+                      <p class="font-cormorant italic text-sm text-[#452e2e] leading-snug font-medium">
+                        "No hay paisaje en este mundo capaz de competir con la belleza de tu mirada y la calma que me das."
+                      </p>
+                      <span class="text-[10px] text-[#8e6e6e] block mt-1 font-semibold">Para Aranxita · Eres mi mayor inspiración</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Floating Little Watercolor Badges -->
+              <div class="absolute -bottom-4 -left-4 bg-[#faf0ea] border-2 border-[#e5d2c2] shadow-lg px-4 py-1.5 rounded-full text-xs font-bold text-[#6d4545] flex items-center gap-1.5">
+                <mat-icon class="text-sm text-[#b85368]">local_florist</mat-icon>
+                <span>Edición Especial 2026</span>
+              </div>
+
+              <div class="absolute -top-3 -right-3 bg-[#fdf2f4] border-2 border-[#f5ccd2] shadow-lg px-3.5 py-1.5 rounded-full text-xs font-bold text-[#b85368] flex items-center gap-1">
+                <mat-icon class="text-sm text-[#b85368]">favorite</mat-icon>
+                <span>Amor Incondicional</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 2: INTRODUCCIÓN ==================== -->
+      <section id="intro" class="py-16 sm:py-24 bg-[#faf5ee]/70 border-t border-b border-[#ebdcd0]/70 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f6ebd9] border border-[#ebd2b5] text-[#99622d] text-xs font-semibold uppercase tracking-wider mb-4">
+            <mat-icon class="text-sm">auto_awesome</mat-icon>
+            <span>El porqué de esta página</span>
+          </div>
+
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#352222] tracking-tight mb-6">
+            La belleza no se mide en palabras, sino en lo que haces sentir
+          </h2>
+
+          <div class="space-y-4 text-base sm:text-lg text-[#5c4747] leading-relaxed font-light">
+            <p>
+              La acuarela es un arte delicado, donde cada gota de agua busca su propio camino, fundiéndose con los pigmentos para crear formas únicas e irrepetibles. Así es como te veo yo: no como una persona común, sino como un lienzo lleno de luz, espontaneidad y ternura.
+            </p>
+            <p>
+              Este rincón digital es mi manera de decirte que te amo, que valoro cada detalle de ti y que siempre tendrás aquí un refugio lleno de color y paz.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 3: LO QUE INSPIRAS ==================== -->
+      <section id="lo-que-inspiras" class="py-16 sm:py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-3xl mx-auto mb-14">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fdeef0] border border-[#f5ccd2] text-[#b85368] text-xs font-semibold uppercase tracking-wider mb-3">
+              <mat-icon class="text-sm">favorite_border</mat-icon>
+              <span>Los matices de tu alma</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#352323] tracking-tight">
+              Lo que despiertas en mi corazón
+            </h2>
+            <p class="text-sm sm:text-base text-[#6d5757] mt-3">
+              Cuatro cualidades luminosas que hacen de ti una mujer verdaderamente inolvidable.
+            </p>
+          </div>
+
+          <!-- 4 Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @for (item of inspirations; track item.title; let idx = $index) {
+              <div
+                class="watercolor-card p-6 flex flex-col justify-between"
+                (mouseenter)="onGalleryCardHover(idx)">
+                <div>
+                  <div
+                    class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 shadow-xs"
+                    [class]="item.bgLight + ' ' + item.textDark">
+                    <mat-icon class="text-2xl">{{ item.icon }}</mat-icon>
+                  </div>
+
+                  <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#352323] mb-2">
+                    {{ item.title }}
+                  </h3>
+
+                  <p class="font-script text-lg mb-3" [class]="item.textDark">
+                    {{ item.quote }}
+                  </p>
+
+                  <p class="text-xs sm:text-sm text-[#5c4747] leading-relaxed font-normal">
+                    {{ item.text }}
+                  </p>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-[#f0e2d8] flex items-center justify-between text-xs text-[#8c7474]">
+                  <span>Matiz 0{{ idx + 1 }}</span>
+                  <span class="font-serif italic font-semibold">Aranxita</span>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 4: GALERÍA DE OBRAS ==================== -->
+      <section id="galeria" class="py-16 sm:py-24 bg-[#faf5ee]/80 border-t border-[#ebdcd0]/70 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#eef5ee] border border-[#d2ebd2] text-[#3b7544] text-xs font-semibold uppercase tracking-wider mb-3">
+                <mat-icon class="text-sm">collections</mat-icon>
+                <span>Exposición Dedicada</span>
+              </div>
+              <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#352323] tracking-tight">
+                Colección de Acuarelas para Aranxita
+              </h2>
+              <p class="text-sm sm:text-base text-[#6d5757] mt-2 max-w-xl">
+                Cuatro lienzos inspirados en diferentes momentos, miradas y sensaciones que compartimos juntos. Haz clic en cualquiera para explorarla.
+              </p>
+            </div>
+
+            <div class="text-xs text-[#8c7474] font-medium hidden md:block">
+              ✦ Haz clic en una obra para ver su historia
+            </div>
+          </div>
+
+          <!-- 4 Gallery Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @for (art of artworks; track art.id; let idx = $index) {
+              <div
+                role="button"
+                tabindex="0"
+                (click)="openArtwork(art)"
+                (keydown.enter)="openArtwork(art)"
+                (keydown.space)="openArtwork(art)"
+                (mouseenter)="onGalleryCardHover(idx)"
+                class="watercolor-card p-5 cursor-pointer flex flex-col justify-between group">
+                
+                <!-- Simulated Watercolor Stain Block -->
+                <div
+                  class="relative w-full h-48 rounded-xl mb-5 flex items-center justify-center overflow-hidden border border-[#ebdcd0] shadow-inner"
+                  [class]="'bg-gradient-to-tr ' + art.bgGradient">
+                  
+                  <div
+                    class="absolute w-36 h-36 rounded-full blur-xl opacity-70 group-hover:scale-125 transition-transform duration-700"
+                    [style.background-color]="art.stainColors[0]">
+                  </div>
+                  <div
+                    class="absolute w-28 h-28 rounded-full blur-2xl opacity-60 translate-x-6 -translate-y-4 group-hover:-translate-x-4 transition-transform duration-700"
+                    [style.background-color]="art.stainColors[1]">
+                  </div>
+
+                  <div class="relative z-10 text-center px-4">
+                    <span class="font-script text-3xl text-[#3b2727] drop-shadow-xs block">
+                      {{ art.title }}
+                    </span>
+                    <span class="text-[10px] uppercase font-bold text-[#6d5555] tracking-widest mt-1 inline-block">
+                      Acuarela Digital
+                    </span>
+                  </div>
+
+                  <div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/85 text-[#6d5555] flex items-center justify-center shadow-xs group-hover:bg-[#d97d8b] group-hover:text-white transition-colors">
+                    <mat-icon class="text-sm">visibility</mat-icon>
+                  </div>
+                </div>
+
+                <!-- Text Info -->
+                <div>
+                  <span
+                    class="text-[11px] font-semibold uppercase tracking-wider block mb-1"
+                    [style.color]="art.themeColor">
+                    {{ art.paletteName }}
+                  </span>
+                  
+                  <h3 class="font-serif text-xl font-bold text-[#352323] group-hover:text-[#b85368] transition-colors">
+                    {{ art.title }}
+                  </h3>
+
+                  <p class="font-script text-base text-[#8c6565] mb-2">
+                    {{ art.subtitle }}
+                  </p>
+
+                  <p class="text-xs text-[#5c4747] line-clamp-2 leading-relaxed">
+                    {{ art.description }}
+                  </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-[#f0e2d8] flex items-center justify-between text-xs text-[#8c7474]">
+                  <span>Ver dedicatoria</span>
+                  <mat-icon class="text-sm group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+                </div>
+
+              </div>
+            }
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 5: CANVAS INTERACTIVO DE ACUARELA ==================== -->
+      <section id="pintar" class="py-16 sm:py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fdeef0] border border-[#f5ccd2] text-[#b85368] text-xs font-semibold uppercase tracking-wider mb-3">
+              <mat-icon class="text-sm">draw</mat-icon>
+              <span>Taller de Bellas Artes Interactivo</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#352323] tracking-tight">
+              Pinta con tus manos para Aranxita
+            </h2>
+            <p class="text-sm sm:text-base text-[#6d5757] mt-3">
+              Usa pinceles con física real de acuarela: cerco oscuro, veladuras por capas, sangrado líquido activo y sal marina.
+            </p>
+          </div>
+
+          <!-- Watercolor Interactive Studio Component -->
+          <div class="max-w-5xl mx-auto">
+            <app-watercolor-canvas></app-watercolor-canvas>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 6: HISTORIA / LO QUE NUNCA DEBES OLVIDAR ==================== -->
+      <section id="historia" class="py-16 sm:py-24 bg-[#faf5ee]/70 border-t border-[#ebdcd0]/70 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-2xl mx-auto mb-14">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fceee8] border border-[#ebd0c4] text-[#a35338] text-xs font-semibold uppercase tracking-wider mb-3">
+              <mat-icon class="text-sm">bookmark_heart</mat-icon>
+              <span>Un recordatorio eterno</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#352323] tracking-tight">
+              Lo que quiero que nunca olvides
+            </h2>
+            <p class="text-sm sm:text-base text-[#6d5757] mt-3 leading-relaxed">
+              Eres hermosa por fuera, pero lo que más amo es la persona que eres por dentro. Guarda estas dos certezas en tu memoria para siempre.
+            </p>
+          </div>
+
+          <!-- 2 Big Cards Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- Card 1: Mi verdad más bonita -->
+            <div class="watercolor-card p-8 flex flex-col justify-between overflow-hidden relative">
+              <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#f28482]/20 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fdeef0] border border-[#f5ccd2] text-[#b85368] text-xs font-bold uppercase tracking-wider mb-5">
+                  <mat-icon class="text-sm">favorite</mat-icon>
+                  <span>Certeza 01</span>
+                </div>
+
+                <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#352323] mb-4">
+                  Mi verdad más bonita
+                </h3>
+
+                <div class="p-4 rounded-xl bg-white/70 border-l-4 border-[#e56b82] italic text-[#553b42] text-sm sm:text-base font-serif mb-4 leading-relaxed">
+                  "Para mí eres una verdadera obra de arte. No una obra quieta colgada en una galería, sino una que respira, ríe, abraza y transforma todo lo que toca."
+                </div>
+
+                <p class="text-xs sm:text-sm text-[#5c4747] leading-relaxed">
+                  El mundo tiene millones de lugares y cosas bonitas, pero ninguna tiene la chispa, la ternura y la luz que tú llevas dentro de ti.
+                </p>
+              </div>
+
+              <div class="mt-8 pt-4 border-t border-[#ebdcd0] flex items-center justify-between text-xs text-[#8c7474]">
+                <span class="font-cinzel text-xs font-semibold">Para Aranxita</span>
+                <span class="font-script text-xl text-[#b85368]">Siempre en mi corazón</span>
+              </div>
+            </div>
+
+            <!-- Card 2: Mi lugar favorito -->
+            <div class="watercolor-card p-8 flex flex-col justify-between overflow-hidden relative">
+              <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-[#70a9a1]/20 rounded-full blur-2xl pointer-events-none"></div>
+
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#edf6f5] border border-[#cce5e1] text-[#336862] text-xs font-bold uppercase tracking-wider mb-5">
+                  <mat-icon class="text-sm">place</mat-icon>
+                  <span>Certeza 02</span>
+                </div>
+
+                <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#352323] mb-4">
+                  Mi lugar favorito
+                </h3>
+
+                <div class="p-4 rounded-xl bg-white/70 border-l-4 border-[#70a9a1] italic text-[#2c4e4a] text-sm sm:text-base font-cormorant mb-4 leading-relaxed">
+                  "Mi lugar favorito en todo el universo siempre será donde estés tú."
+                </div>
+
+                <p class="text-xs sm:text-sm text-[#5c4747] leading-relaxed">
+                  No importan las coordenadas ni el clima. Mientras pueda ver tus ojos, escuchar tu risa y sentir tu mano en la mía, estoy en el lugar correcto.
+                </p>
+              </div>
+
+              <div class="mt-8 pt-4 border-t border-[#ebdcd0] flex items-center justify-between text-xs text-[#8c7474]">
+                <span class="font-cinzel text-xs font-semibold">Mi hogar eres tú</span>
+                <span class="font-script text-xl text-[#336862]">Paz y amor</span>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 7: CTA / CARTA Y PORTAL A LA PARTE II ==================== -->
+      <section id="carta" class="py-16 sm:py-24 bg-gradient-to-b from-[#faf6f0] via-[#f7eee4] to-[#f4e8dc] border-t border-[#ebdcd0]/60 relative overflow-hidden">
+        
+        <!-- Watercolor Ambient Globs -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#f28482]/20 rounded-full blur-3xl stain-blob pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-[#a084ca]/20 rounded-full blur-3xl stain-blob-2 pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          
+          <!-- Wax Seal Badge -->
+          <button
+            type="button"
+            id="wax-seal-badge-btn"
+            (click)="openLetter()"
+            title="Abrir carta de amor"
+            class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-tr from-[#b85368] to-[#e56b82] text-white flex items-center justify-center shadow-lg mb-6 group cursor-pointer hover:scale-110 transition-transform">
+            <mat-icon class="text-3xl sm:text-4xl">mark_email_read</mat-icon>
+          </button>
+
+          <h2 class="font-cinzel text-3xl sm:text-5xl font-extrabold text-[#311f1f] tracking-tight mb-3">
+            Para la mujer que amo
+          </h2>
+          <p class="font-script text-3xl sm:text-4xl text-[#b85368] mb-8">
+            Gracias por existir y por compartir tu mundo conmigo
+          </p>
+
+          <!-- 2 Final Cards in Section 7 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-10">
+            
+            <!-- Card 1: Agradecimiento -->
+            <div class="watercolor-card p-6 sm:p-8">
+              <div class="flex items-center gap-2.5 text-[#b85368] mb-3">
+                <mat-icon class="text-xl">volunteer_activism</mat-icon>
+                <h3 class="font-serif text-xl font-bold text-[#352323]">Agradecimiento</h3>
+              </div>
+              <p class="text-xs sm:text-sm text-[#574242] leading-relaxed">
+                Gracias por cada sonrisa compartida, por tu paciencia, por tu cariño sincero y por convertir cada día a tu lado en un regalo inmenso.
+              </p>
+            </div>
+
+            <!-- Card 2: Mi promesa -->
+            <div class="watercolor-card p-6 sm:p-8">
+              <div class="flex items-center gap-2.5 text-[#70a9a1] mb-3">
+                <mat-icon class="text-xl">stars</mat-icon>
+                <h3 class="font-serif text-xl font-bold text-[#352323]">Mi promesa</h3>
+              </div>
+              <p class="text-xs sm:text-sm text-[#574242] leading-relaxed font-medium text-[#463232]">
+                "Seguir encontrando nuevas formas de recordarte que eres preciosa, especial y profundamente amada."
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Open Letter Button -->
+          <button
+            type="button"
+            id="final-open-letter-btn"
+            (click)="openLetter()"
+            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-[#d97d8b] to-[#c85a70] hover:from-[#c86b79] hover:to-[#b84c60] text-white font-serif text-base sm:text-lg font-bold shadow-xl hover:shadow-2xl transition-all inline-flex items-center gap-2.5 group">
+            <mat-icon class="text-xl group-hover:scale-125 transition-transform">favorite</mat-icon>
+            <span>Abrir la Carta Completa para Aranxita</span>
+          </button>
+
+          <!-- ========================================================================= -->
+          <!-- ==================== GRAN BOTÓN PORTAL A LA PARTE II ===================== -->
+          <!-- ========================================================================= -->
+          <div class="mt-14 max-w-3xl mx-auto p-8 sm:p-10 rounded-3xl bg-[#091228] border-2 border-[#ffd166] shadow-2xl text-center relative overflow-hidden text-white">
+            <div class="absolute -top-16 -right-16 w-60 h-60 bg-[#ffd166]/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-16 -left-16 w-60 h-60 bg-[#0077b6]/35 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10">
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ffd166]/20 border border-[#ffd166]/40 text-[#ffeaa7] text-xs font-bold uppercase tracking-wider mb-4 font-cinzel">
+                <mat-icon class="text-sm text-[#ffd166]">auto_awesome</mat-icon>
+                <span>Parte II · Continuación de la Obra Maestra</span>
+              </div>
+              
+              <h3 class="font-cinzel text-2xl sm:text-4xl font-bold text-[#fffae6] mb-3 tracking-tight">
+                La Noche Estrellada de Vincent van Gogh
+              </h3>
+              
+              <p class="text-sm sm:text-base text-[#c4d7f8] max-w-xl mx-auto mb-6 leading-relaxed font-cormorant italic text-lg">
+                Haz clic abajo para transformar la experiencia por completo y adentrarte en un firmamento de óleo, vórtices cósmicos dorados, estrellas ardientes y cartas de amor desde Saint-Rémy inspiradas en Aranxita.
+              </p>
+              
+              <button
+                type="button"
+                id="btn-switch-to-starry-night"
+                (click)="switchToStarryNight()"
+                class="px-8 sm:px-10 py-4 rounded-2xl bg-gradient-to-r from-[#ffd166] via-[#ffaa00] to-[#e07a5f] hover:opacity-95 text-[#081128] font-cinzel text-sm sm:text-base font-bold shadow-2xl hover:shadow-[0_0_35px_rgba(255,209,102,0.6)] hover:scale-105 transition-all inline-flex items-center gap-3 cursor-pointer">
+                <mat-icon class="text-2xl text-[#081128]">flare</mat-icon>
+                <span>Entrar a la Parte II: La Noche Estrellada de Aranxita</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==================== FOOTER ACUARELA ==================== -->
+    <footer class="bg-[#f0e3d6] border-t border-[#dfcebe] py-10 text-center relative z-10">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+        
+        <div class="flex items-center justify-center gap-2 text-[#b85368]">
+          <mat-icon class="text-lg">brush</mat-icon>
+          <span class="font-serif text-lg font-bold text-[#3d2727]">Aranxita</span>
+          <span class="text-xs">·</span>
+          <span class="font-script text-2xl">eres una obra de arte</span>
+          <mat-icon class="text-lg">favorite</mat-icon>
+        </div>
+
+        <p class="text-xs text-[#7d6868] tracking-wider uppercase font-medium">
+          Hecho con amor · color · agua · luz · 2026
+        </p>
+
+        <div class="pt-2 text-[11px] text-[#9c8484]">
+          Una dedicatoria en acuarela de bellas artes y óleo celestial para la mujer más hermosa de mi vida.
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+}
+
+<!-- ========================================================================= -->
+<!-- =================== PARTE II: LA NOCHE ESTRELLADA ======================= -->
+<!-- ========================================================================= -->
+@if (currentTheme() === 'starry_night') {
+
+  <!-- Living Van Gogh Starry Sky Canvas Background -->
+  <app-starry-night-background></app-starry-night-background>
+
+  <!-- Global Starry Envelope Modal -->
+  @if (isStarryLetterOpen()) {
+    <app-starry-letter-modal (closeModal)="closeStarryLetter()"></app-starry-letter-modal>
+  }
+
+  <!-- Detailed Starry Artwork Modal -->
+  @if (selectedStarryArtwork(); as sArt) {
+    <div
+      role="dialog"
+      aria-modal="true"
+      tabindex="0"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-[#040816]/80 backdrop-blur-md animate-fade-in text-white"
+      (click)="onStarryArtworkBackdropClick($event)"
+      (keydown.escape)="closeStarryArtwork()">
+      <div
+        class="relative w-full max-w-xl bg-[#0f1b38] rounded-3xl border-2 border-[#ffd166]/70 shadow-2xl p-6 sm:p-8 overflow-hidden text-[#e2ecfa]">
+        
+        <!-- Background Van Gogh Star Aura -->
+        <div
+          class="absolute -top-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-35 pointer-events-none"
+          [style.background-color]="sArt.themeColor">
+        </div>
+        <div
+          class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-30 pointer-events-none"
+          [style.background-color]="sArt.accentColor">
+        </div>
+
+        <button
+          type="button"
+          (click)="closeStarryArtwork()"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#182a52] border border-[#ffd166]/40 text-[#ffd166] hover:bg-[#22396e] hover:text-white transition flex items-center justify-center shadow-md">
+          <mat-icon class="text-xl">close</mat-icon>
+        </button>
+
+        <!-- Art Header -->
+        <div class="mb-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span
+              class="inline-block px-3 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border border-[#ffd166]/40 bg-[#ffd166]/15 text-[#ffeaa7]">
+              {{ sArt.yearRef }}
+            </span>
+            <span class="text-xs text-[#9bb0d8] italic">{{ sArt.paletteName }}</span>
+          </div>
+          <h3 class="font-serif text-2xl sm:text-3xl font-bold text-[#fffae6]">{{ sArt.title }}</h3>
+          <p class="font-serif italic text-base text-[#ffd166] mt-0.5">{{ sArt.subtitle }}</p>
+        </div>
+
+        <!-- Simulated Starry Night Painting Frame -->
+        <div
+          class="relative w-full h-48 sm:h-56 rounded-2xl mb-6 flex items-center justify-center overflow-hidden border-2 border-[#ffd166]/40 shadow-inner"
+          [class]="'bg-gradient-to-tr ' + sArt.bgGradient">
+          
+          <!-- Swirling vortex impasto simulation -->
+          <div class="absolute inset-0 cosmic-swirl opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#ffd166] via-[#0077b6] to-transparent"></div>
+          
+          <!-- Venus star core -->
+          <div class="absolute w-20 h-20 rounded-full bg-[#ffd166]/40 blur-xl animate-pulse"></div>
+          <div class="absolute w-6 h-6 rounded-full bg-white shadow-[0_0_20px_#ffffff]"></div>
+
+          <div class="relative z-10 text-center px-6 max-w-md">
+            <p class="font-serif italic text-base sm:text-lg text-[#fffae6] font-medium drop-shadow-md">
+              {{ sArt.quote }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <p class="text-sm sm:text-base text-[#ccd9f0] leading-relaxed mb-6 font-normal">
+          {{ sArt.description }}
+        </p>
+
+        <div class="flex items-center justify-between pt-4 border-t border-[#223560]">
+          <div class="flex items-center gap-1.5">
+            @for (tag of sArt.tags; track tag) {
+              <span class="px-2.5 py-1 rounded-md bg-[#182950] text-[#ffeaa7] text-xs font-semibold border border-[#2e467d]">
+                #{{ tag }}
+              </span>
+            }
+          </div>
+
+          <button
+            type="button"
+            (click)="closeStarryArtwork()"
+            class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#ffd166] to-[#ffaa00] text-[#0a1128] text-xs font-bold transition shadow-md hover:scale-105">
+            Cerrar obra
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="relative z-10 min-h-screen flex flex-col selection:bg-[#ffd166]/40 selection:text-[#060b1c] text-white">
+
+    <!-- ==================== STARRY NIGHT HEADER ==================== -->
+    <header class="sticky top-0 z-40 bg-[#070d1e]/85 backdrop-blur-md border-b border-[#253966] transition-all">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+        
+        <!-- Brand Logo / Dedication title -->
+        <a
+          href="#starry-hero"
+          (click)="$event.preventDefault(); scrollTo('starry-hero')"
+          class="flex items-center gap-3 group focus:outline-none">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-[#ffd166] via-[#ffaa00] to-[#0077b6] p-0.5 shadow-md group-hover:rotate-45 transition-transform duration-700">
+            <div class="w-full h-full rounded-full bg-[#081126] flex items-center justify-center text-[#ffd166]">
+              <mat-icon class="text-xl">nightlight</mat-icon>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <span class="font-cinzel text-lg sm:text-xl font-bold tracking-tight text-[#fffae6] group-hover:text-[#ffd166] transition-colors">
+                Aranxita
+              </span>
+              <span class="w-1.5 h-1.5 rounded-full bg-[#ffd166]"></span>
+            </div>
+            <p class="text-[11px] text-[#9bb0d8] tracking-wide font-normal -mt-0.5">
+              Parte II · La Noche Estrellada
+            </p>
+          </div>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex items-center gap-1 lg:gap-2">
+          <button
+            type="button"
+            (click)="scrollTo('starry-hero')"
+            [class.text-[#ffd166]]="activeNav() === 'starry-hero'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#c4d7f8] hover:text-[#ffd166] transition-colors rounded-lg group">
+            <span>Firmamento</span>
+            @if (activeNav() === 'starry-hero') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#ffd166] rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="scrollTo('starry-constelaciones')"
+            [class.text-[#ffd166]]="activeNav() === 'starry-constelaciones'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#c4d7f8] hover:text-[#ffd166] transition-colors rounded-lg group">
+            <span>Constelaciones</span>
+            @if (activeNav() === 'starry-constelaciones') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#ffd166] rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="scrollTo('starry-galeria')"
+            [class.text-[#ffd166]]="activeNav() === 'starry-galeria'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#c4d7f8] hover:text-[#ffd166] transition-colors rounded-lg group">
+            <span>Óleos de Saint-Rémy</span>
+            @if (activeNav() === 'starry-galeria') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#ffd166] rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="scrollTo('starry-pintar')"
+            [class.text-[#ffd166]]="activeNav() === 'starry-pintar'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#c4d7f8] hover:text-[#ffd166] transition-colors rounded-lg group">
+            <span>Taller Impasto</span>
+            @if (activeNav() === 'starry-pintar') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#ffd166] rounded-full blur-[1px]"></span>
+            }
+          </button>
+
+          <button
+            type="button"
+            (click)="scrollTo('starry-cartas')"
+            [class.text-[#ffd166]]="activeNav() === 'starry-cartas'"
+            class="relative px-3.5 py-2 text-xs lg:text-sm font-medium text-[#c4d7f8] hover:text-[#ffd166] transition-colors rounded-lg group">
+            <span>Cartas</span>
+            @if (activeNav() === 'starry-cartas') {
+              <span class="absolute bottom-1 left-3.5 right-3.5 h-1 bg-[#ffd166] rounded-full blur-[1px]"></span>
+            }
+          </button>
+        </nav>
+
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-2">
+          <!-- Switch back to Part 1: Watercolor -->
+          <button
+            type="button"
+            (click)="switchToWatercolor()"
+            title="Volver a la Parte I: Taller de Acuarela"
+            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fdeef0] hover:bg-[#fae1e5] text-[#b85368] border border-[#f5ccd2] text-xs font-bold shadow-sm transition hover:scale-105">
+            <mat-icon class="text-sm">brush</mat-icon>
+            <span class="hidden sm:inline">Parte I · Acuarela</span>
+          </button>
+
+          <!-- Audio toggle -->
+          <button
+            type="button"
+            (click)="toggleSound()"
+            [title]="isSoundMuted() ? 'Activar sonido' : 'Silenciar sonido'"
+            class="w-9 h-9 rounded-full bg-[#122044] border border-[#2b4175] text-[#ffd166] hover:text-white transition flex items-center justify-center shadow-xs">
+            <mat-icon class="text-base">{{ isSoundMuted() ? 'volume_off' : 'volume_up' }}</mat-icon>
+          </button>
+
+          <!-- Open Starry Letter CTA -->
+          <button
+            type="button"
+            (click)="openStarryLetter()"
+            class="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#ffd166] to-[#ffaa00] hover:opacity-90 text-[#090e24] text-xs font-bold shadow-sm hover:shadow transition flex items-center gap-1.5">
+            <mat-icon class="text-sm">mail</mat-icon>
+            <span class="hidden sm:inline">Carta Celestial</span>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ==================== CONTENIDO PRINCIPAL NOCHE ESTRELLADA ==================== -->
+    <main class="flex-1">
+
+      <!-- ==================== SECCIÓN 1: STARRY HERO ==================== -->
+      <section id="starry-hero" class="relative pt-12 pb-20 sm:pt-20 sm:pb-28 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Left Column (Van Gogh Starry Night Dedication) -->
+            <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+              
+              <!-- Starry Night Badge -->
+              <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#ffd166]/15 border border-[#ffd166]/40 text-[#ffeaa7] text-xs sm:text-sm font-bold tracking-wide uppercase shadow-lg">
+                <mat-icon class="text-sm text-[#ffd166]">flare</mat-icon>
+                <span>Homenaje a Vincent van Gogh · Dedicado a Aranxita</span>
+              </div>
+
+              <!-- Main Title -->
+              <h1 class="font-serif text-4xl sm:text-6xl lg:text-7xl font-extrabold text-[#fffae6] tracking-tight leading-[1.08]">
+                La Noche <br />
+                <span class="font-serif italic text-4xl sm:text-6xl lg:text-7xl text-[#ffd166] block sm:inline font-normal drop-shadow-[0_0_20px_rgba(255,209,102,0.4)]">
+                  Estrellada de mi Vida
+                </span>
+              </h1>
+
+              <!-- Subtitle -->
+              <p class="text-base sm:text-xl text-[#c4d7f8] max-w-2xl font-light leading-relaxed">
+                Ni todas las constelaciones ni los remolinos dorados del firmamento de Van Gogh brillan con tanta intensidad, calidez y belleza como lo haces tú, mi amada Aranxita.
+              </p>
+
+              <!-- Hero Actions -->
+              <div class="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                <button
+                  type="button"
+                  (click)="openStarryLetter()"
+                  class="px-7 py-3.5 rounded-2xl bg-gradient-to-r from-[#ffd166] via-[#ffaa00] to-[#e07a5f] hover:opacity-95 text-[#0a1128] font-serif text-sm sm:text-base font-bold shadow-xl hover:shadow-[0_0_30px_rgba(255,209,102,0.5)] transition-all flex items-center gap-2 group">
+                  <mat-icon class="text-lg group-hover:scale-125 transition-transform text-[#0a1128]">mail</mat-icon>
+                  <span>Carta desde Saint-Rémy</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="scrollTo('starry-galeria')"
+                  class="px-6 py-3.5 rounded-2xl bg-[#101c3d]/90 hover:bg-[#182956] border border-[#ffd166]/40 text-[#fffae6] font-serif text-sm sm:text-base font-semibold shadow-md transition flex items-center gap-2">
+                  <mat-icon class="text-lg text-[#ffd166]">collections</mat-icon>
+                  <span>Galería de Óleos</span>
+                </button>
+
+                <button
+                  type="button"
+                  (click)="scrollTo('starry-pintar')"
+                  class="px-6 py-3.5 rounded-2xl bg-[#0077b6]/80 hover:bg-[#0096c7] text-white font-serif text-sm sm:text-base font-semibold shadow-md transition flex items-center gap-2 border border-[#48cae4]/50">
+                  <mat-icon class="text-lg text-[#ffd166]">brush</mat-icon>
+                  <span>Pintar al Óleo</span>
+                </button>
+              </div>
+
+              <!-- Quote Card -->
+              <div class="pt-4 max-w-xl mx-auto lg:mx-0">
+                <div class="p-4 rounded-2xl bg-[#0e1a38]/80 backdrop-blur-md border border-[#ffd166]/30 shadow-md flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-[#ffd166]/20 text-[#ffd166] flex items-center justify-center shrink-0">
+                    <mat-icon class="text-lg">auto_awesome</mat-icon>
+                  </div>
+                  <p class="font-serif italic text-xs sm:text-sm text-[#ffeaa7]">
+                    "A menudo me parece que la noche está más viva y ricamente coloreada que el día cuando tú estás a mi lado."
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column (Van Gogh Gilded Oil Masterpiece Showcase) -->
+            <div class="lg:col-span-5 relative">
+              
+              <!-- Museum Gilded Golden Baroque Frame -->
+              <div class="relative w-full aspect-[4/5] sm:aspect-square lg:aspect-[4/5] rounded-3xl bg-[#070e24] border-4 border-[#ffd166] shadow-[0_0_50px_rgba(255,209,102,0.25)] p-6 overflow-hidden flex flex-col justify-between">
+                
+                <!-- Swirling Sky Background Vortices -->
+                <div class="absolute -top-12 -right-12 w-72 h-72 bg-[#ffd166]/25 rounded-full blur-3xl cosmic-swirl pointer-events-none"></div>
+                <div class="absolute top-1/3 -left-16 w-64 h-64 bg-[#0077b6]/35 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-12 right-1/4 w-72 h-72 bg-[#7209b7]/30 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Museum plaque header -->
+                <div class="relative z-10 flex items-center justify-between">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-[#ffeaa7] bg-[#122044]/90 px-3 py-1 rounded-full border border-[#ffd166]/40 shadow-sm">
+                    Saint-Rémy · Óleo sobre Lienzo
+                  </span>
+                  <span class="text-xs font-serif italic text-[#ffd166] font-semibold">
+                    1889 - 2026
+                  </span>
+                </div>
+
+                <!-- Masterpiece Celestial Emblem -->
+                <div class="relative z-10 my-auto text-center py-4">
+                  
+                  <!-- Golden Crescent Moon & Star Vortex Ring -->
+                  <div class="relative w-44 h-44 sm:w-52 sm:h-52 mx-auto flex items-center justify-center mb-4">
+                    <!-- Radiating Halos -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-[#ffd166]/40 via-[#ffaa00]/30 to-[#0077b6]/40 blur-md star-halo-glow"></div>
+                    <div class="absolute inset-3 rounded-full border-2 border-dashed border-[#ffd166]/60 cosmic-swirl"></div>
+
+                    <!-- Inner Golden Core -->
+                    <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[#08122c] p-2 shadow-inner border-2 border-[#ffd166] flex flex-col items-center justify-center">
+                      <div class="absolute -top-1 right-3">
+                        <mat-icon class="text-xs text-[#ffd166]">flare</mat-icon>
+                      </div>
+                      <div class="absolute -bottom-1 left-3">
+                        <mat-icon class="text-xs text-[#ffd166]">nightlight</mat-icon>
+                      </div>
+                      
+                      <mat-icon class="text-3xl sm:text-4xl text-[#ffd166] mb-0.5">nightlight</mat-icon>
+                      <span class="font-cormorant italic text-2xl sm:text-3xl text-[#fffae6] font-bold">Aranxita</span>
+                      <span class="text-[9px] sm:text-[10px] uppercase font-bold text-[#ffd166] tracking-widest mt-0.5 font-cinzel">Mi Noche Estrellada</span>
+                    </div>
+                  </div>
+
+                  <span class="text-[11px] uppercase tracking-widest text-[#9bb0d8] font-bold flex items-center justify-center gap-1.5 font-cinzel">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#ffd166]"></span>
+                    <span>Impasto, Cobalto y Oro Cadmio</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#0077b6]"></span>
+                  </span>
+                  <h2 class="font-cinzel text-xl sm:text-2xl font-bold text-[#fffae6] mt-0.5">
+                    Tu luz en mi universo
+                  </h2>
+                </div>
+
+                <!-- Floating Dedication Plaque -->
+                <div class="relative z-20 bg-[#0e1a38]/95 backdrop-blur-md rounded-2xl p-4 border border-[#ffd166]/40 shadow-lg">
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-full bg-[#ffd166] text-[#0a1128] flex items-center justify-center shrink-0 shadow-md font-bold">
+                      <mat-icon class="text-sm">format_quote</mat-icon>
+                    </div>
+                    <div>
+                      <p class="font-cormorant italic text-sm text-[#e2ecfa] leading-snug font-medium">
+                        "Eres la estrella que desafía a la noche entera y convierte cada sombra en un resplandor dorado."
+                      </p>
+                      <span class="text-[10px] text-[#ffd166] block mt-1 font-semibold font-cinzel">Para Aranxita · Eres mi mayor inspiración</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- Floating Star Badges -->
+              <div class="absolute -bottom-4 -left-4 bg-[#0e1c3c] border-2 border-[#ffd166] shadow-xl px-4 py-1.5 rounded-full text-xs font-bold text-[#ffeaa7] flex items-center gap-1.5">
+                <mat-icon class="text-xs text-[#ffd166]">flare</mat-icon>
+                <span>Vincent van Gogh 1889</span>
+              </div>
+
+              <div class="absolute -top-3 -right-3 bg-[#0e1c3c] border-2 border-[#ffd166] shadow-xl px-3.5 py-1.5 rounded-full text-xs font-bold text-[#ffd166] flex items-center gap-1">
+                <mat-icon class="text-xs text-[#ffd166]">favorite</mat-icon>
+                <span>Amor Eterno</span>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 2: EL POEMA DE SAINT-RÉMY ==================== -->
+      <section id="starry-intro" class="py-16 sm:py-24 bg-[#070f24]/80 border-t border-b border-[#1f325c] relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          
+          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ffd166]/15 border border-[#ffd166]/40 text-[#ffeaa7] text-xs font-semibold uppercase tracking-wider mb-4">
+            <mat-icon class="text-sm text-[#ffd166]">auto_awesome</mat-icon>
+            <span>El Encuentro entre Vincent y Aranxita</span>
+          </div>
+
+          <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#fffae6] tracking-tight mb-6">
+            "Pienso que no hay nada más verdaderamente artístico que amar a alguien"
+          </h2>
+
+          <div class="space-y-4 text-base sm:text-lg text-[#c4d7f8] leading-relaxed font-light">
+            <p>
+              Van Gogh no pintaba la realidad tal como la veían sus ojos: la pintaba con la fuerza descomunal de su corazón. Cada espiral en el cielo de Saint-Rémy era un grito de asombro ante la vida, la luz y la esperanza.
+            </p>
+            <p>
+              Exactamente eso es lo que siento por ti, Aranxita. Amarte es contemplar una obra de arte viva que conmueve, inspira y llena de color cada rincón de mi existencia.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 3: CONSTELACIONES ==================== -->
+      <section id="starry-constelaciones" class="py-16 sm:py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-3xl mx-auto mb-14">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ffd166]/15 border border-[#ffd166]/40 text-[#ffeaa7] text-xs font-semibold uppercase tracking-wider mb-3">
+              <mat-icon class="text-sm text-[#ffd166]">star</mat-icon>
+              <span>El Firmamento de tu Alma</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#fffae6] tracking-tight">
+              Lo que inspiras bajo las estrellas
+            </h2>
+            <p class="text-sm sm:text-base text-[#9bb0d8] mt-3">
+              Cuatro elementos cósmicos de la Noche Estrellada que reflejan la grandeza de tu ser.
+            </p>
+          </div>
+
+          <!-- 4 Constellation Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @for (item of starryConstellations; track item.title; let idx = $index) {
+              <div
+                class="starry-card p-6 flex flex-col justify-between"
+                (mouseenter)="onGalleryCardHover(idx)">
+                <div>
+                  <div
+                    class="w-12 h-12 rounded-2xl flex items-center justify-center mb-5 shadow-lg bg-[#14264f] border border-[#ffd166]/40 text-[#ffd166]">
+                    <mat-icon class="text-2xl">{{ item.icon }}</mat-icon>
+                  </div>
+
+                  <h3 class="font-serif text-xl sm:text-2xl font-bold text-[#fffae6] mb-2">
+                    {{ item.title }}
+                  </h3>
+
+                  <p class="font-serif italic text-sm mb-3" [class]="item.textAccent">
+                    "{{ item.quote }}"
+                  </p>
+
+                  <p class="text-xs sm:text-sm text-[#ccd9f0] leading-relaxed font-normal">
+                    {{ item.text }}
+                  </p>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-[#223868] flex items-center justify-between text-xs text-[#9bb0d8]">
+                  <span>Constelación 0{{ idx + 1 }}</span>
+                  <span class="font-serif italic font-semibold text-[#ffd166]">Aranxita</span>
+                </div>
+              </div>
+            }
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 4: GALERÍA DE ÓLEOS ==================== -->
+      <section id="starry-galeria" class="py-16 sm:py-24 bg-[#070f24]/85 border-t border-[#1f325c] relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+            <div>
+              <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#0077b6]/30 border border-[#0096c7] text-[#90e0ef] text-xs font-bold uppercase tracking-wider mb-3">
+                <mat-icon class="text-sm">palette</mat-icon>
+                <span>Colección Postimpresionista</span>
+              </div>
+              <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#fffae6] tracking-tight">
+                Obras al Óleo de Saint-Rémy & Arles
+              </h2>
+              <p class="text-sm sm:text-base text-[#9bb0d8] mt-2 max-w-xl">
+                Cuatro cuadros inspirados en el genio de Van Gogh, dedicados a la belleza, ternura y luz que Aranxita regala al mundo.
+              </p>
+            </div>
+
+            <div class="text-xs text-[#ffd166] font-semibold hidden md:block">
+              ✦ Haz clic en una obra para contemplar su historia y dedicatoria
+            </div>
+          </div>
+
+          <!-- 4 Starry Gallery Cards Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @for (sArt of starryArtworks; track sArt.id; let idx = $index) {
+              <div
+                role="button"
+                tabindex="0"
+                (click)="openStarryArtwork(sArt)"
+                (keydown.enter)="openStarryArtwork(sArt)"
+                (keydown.space)="openStarryArtwork(sArt)"
+                (mouseenter)="onGalleryCardHover(idx)"
+                class="starry-card p-5 cursor-pointer flex flex-col justify-between group">
+                
+                <!-- Starry Canvas Simulation Frame -->
+                <div
+                  class="relative w-full h-48 rounded-xl mb-5 flex items-center justify-center overflow-hidden border border-[#ffd166]/40 shadow-inner"
+                  [class]="'bg-gradient-to-tr ' + sArt.bgGradient">
+                  
+                  <!-- Swirling Impasto Overlay -->
+                  <div class="absolute inset-0 cosmic-swirl opacity-35 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#ffd166] via-[#0077b6] to-transparent"></div>
+                  
+                  <div class="absolute w-28 h-28 rounded-full blur-xl opacity-60 group-hover:scale-130 transition-transform duration-700 bg-[#ffd166]/40"></div>
+
+                  <div class="relative z-10 text-center px-4">
+                    <span class="font-serif text-xl font-bold text-[#fffae6] drop-shadow-md block">
+                      {{ sArt.title }}
+                    </span>
+                    <span class="text-[10px] uppercase font-bold text-[#ffd166] tracking-widest mt-1 inline-block">
+                      Óleo Impasto · {{ sArt.yearRef }}
+                    </span>
+                  </div>
+
+                  <div class="absolute top-3 right-3 w-8 h-8 rounded-full bg-[#0a1226]/80 text-[#ffd166] border border-[#ffd166]/50 flex items-center justify-center shadow-md group-hover:bg-[#ffd166] group-hover:text-[#0a1128] transition-colors">
+                    <mat-icon class="text-sm">visibility</mat-icon>
+                  </div>
+                </div>
+
+                <!-- Text Info -->
+                <div>
+                  <span
+                    class="text-[11px] font-semibold uppercase tracking-wider block mb-1 text-[#ffd166]">
+                    {{ sArt.paletteName }}
+                  </span>
+                  
+                  <h3 class="font-serif text-xl font-bold text-[#fffae6] group-hover:text-[#ffd166] transition-colors">
+                    {{ sArt.title }}
+                  </h3>
+
+                  <p class="font-serif italic text-xs text-[#9bb0d8] mb-2">
+                    {{ sArt.subtitle }}
+                  </p>
+
+                  <p class="text-xs text-[#ccd9f0] line-clamp-2 leading-relaxed">
+                    {{ sArt.description }}
+                  </p>
+                </div>
+
+                <div class="mt-4 pt-3 border-t border-[#223868] flex items-center justify-between text-xs text-[#ffd166]">
+                  <span>Ver lienzo al óleo</span>
+                  <mat-icon class="text-sm group-hover:translate-x-1 transition-transform">arrow_forward</mat-icon>
+                </div>
+
+              </div>
+            }
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 5: TALLER DE IMPASTO VAN GOGH ==================== -->
+      <section id="starry-pintar" class="py-16 sm:py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div class="text-center max-w-3xl mx-auto mb-10">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#ffd166]/15 border border-[#ffd166]/40 text-[#ffeaa7] text-xs font-semibold uppercase tracking-wider mb-3">
+              <mat-icon class="text-sm text-[#ffd166]">brush</mat-icon>
+              <span>Atelier de Óleo y Textura Impasto</span>
+            </div>
+            <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#fffae6] tracking-tight">
+              Pinta tu propia Noche Estrellada
+            </h2>
+            <p class="text-sm sm:text-base text-[#9bb0d8] mt-3">
+              Usa pinceladas de óleo espeso, vórtices cósmicos, estrellas con halos concéntricos y espátula para crear una obra de arte para Aranxita.
+            </p>
+          </div>
+
+          <!-- Starry Night Interactive Studio Component -->
+          <div class="max-w-5xl mx-auto">
+            <app-starry-night-canvas></app-starry-night-canvas>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==================== SECCIÓN 6: CARTAS DESDE SAINT-RÉMY ==================== -->
+      <section id="starry-cartas" class="py-16 sm:py-24 bg-gradient-to-b from-[#070e22] via-[#0b1535] to-[#060b1a] border-t border-[#1f325c] relative overflow-hidden">
+        
+        <!-- Swirling starry glows -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-[#ffd166]/15 rounded-full blur-3xl cosmic-swirl pointer-events-none"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-[#0077b6]/25 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          
+          <!-- Golden Starry Seal Button -->
+          <button
+            type="button"
+            (click)="openStarryLetter()"
+            title="Abrir carta desde Saint-Rémy"
+            class="w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full bg-gradient-to-tr from-[#ffd166] via-[#ffaa00] to-[#e07a5f] text-[#0a1128] flex items-center justify-center shadow-[0_0_40px_rgba(255,209,102,0.5)] mb-6 group cursor-pointer hover:scale-115 transition-transform font-bold">
+            <mat-icon class="text-3xl sm:text-4xl text-[#0a1128]">nightlight</mat-icon>
+          </button>
+
+          <h2 class="font-serif text-3xl sm:text-5xl font-extrabold text-[#fffae6] tracking-tight mb-3">
+            Cartas desde Saint-Rémy para Aranxita
+          </h2>
+          <p class="font-serif italic text-2xl sm:text-3xl text-[#ffd166] mb-8">
+            "No hay nada más sublime en este mundo que amarte con todo el corazón"
+          </p>
+
+          <!-- 2 Cards in Section 6 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-left mb-10">
+            
+            <!-- Card 1 -->
+            <div class="starry-card p-6 sm:p-8">
+              <div class="flex items-center gap-2.5 text-[#ffd166] mb-3">
+                <mat-icon class="text-xl">flare</mat-icon>
+                <h3 class="font-serif text-xl font-bold text-[#fffae6]">La Luz que Desafía la Oscuridad</h3>
+              </div>
+              <p class="text-xs sm:text-sm text-[#ccd9f0] leading-relaxed">
+                Así como la luna de Van Gogh ilumina el pueblo dormido, tu ternura disipa cualquier miedo o tristeza y llena mi vida de serenidad y amor verdadero.
+              </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="starry-card p-6 sm:p-8">
+              <div class="flex items-center gap-2.5 text-[#48cae4] mb-3">
+                <mat-icon class="text-xl">auto_awesome</mat-icon>
+                <h3 class="font-serif text-xl font-bold text-[#fffae6]">Mi Promesa Eterna</h3>
+              </div>
+              <p class="text-xs sm:text-sm text-[#ccd9f0] leading-relaxed font-medium">
+                "Seguir cuidándote, admirándote y amándote con la misma pasión infinita con la que las estrellas brillan en el cielo nocturno."
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Open Starry Letter Button -->
+          <button
+            type="button"
+            (click)="openStarryLetter()"
+            class="px-8 py-4 rounded-2xl bg-gradient-to-r from-[#ffd166] via-[#ffaa00] to-[#e07a5f] text-[#0a1128] font-serif text-base sm:text-lg font-bold shadow-2xl hover:shadow-[0_0_40px_rgba(255,209,102,0.6)] hover:scale-105 transition-all inline-flex items-center gap-2.5 group cursor-pointer">
+            <mat-icon class="text-xl group-hover:scale-125 transition-transform text-[#0a1128]">mail</mat-icon>
+            <span>Abrir la Carta Completa de Saint-Rémy</span>
+          </button>
+
+          <!-- Action to return to Part 1: Watercolor -->
+          <div class="mt-14 pt-8 border-t border-[#1f325c] flex flex-wrap items-center justify-center gap-4">
+            <button
+              type="button"
+              (click)="switchToWatercolor()"
+              class="px-6 py-3 rounded-xl bg-[#fdeef0] hover:bg-[#fae1e5] text-[#b85368] border border-[#f5ccd2] text-xs sm:text-sm font-bold shadow-md transition hover:scale-105 flex items-center gap-2">
+              <mat-icon class="text-sm">brush</mat-icon>
+              <span>Volver a la Parte I: Taller de Acuarela</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="scrollTo('starry-hero')"
+              class="px-6 py-3 rounded-xl bg-[#122044] hover:bg-[#1a2d5e] text-[#ffd166] border border-[#ffd166]/40 text-xs sm:text-sm font-bold shadow-md transition hover:scale-105 flex items-center gap-2">
+              <mat-icon class="text-sm">keyboard_arrow_up</mat-icon>
+              <span>Subir al Firmamento</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==================== FOOTER NOCHE ESTRELLADA ==================== -->
+    <footer class="bg-[#050a18] border-t border-[#1a294d] py-10 text-center relative z-10 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+        
+        <div class="flex items-center justify-center gap-2 text-[#ffd166]">
+          <mat-icon class="text-lg">nightlight</mat-icon>
+          <span class="font-serif text-lg font-bold text-[#fffae6]">Aranxita</span>
+          <span class="text-xs">·</span>
+          <span class="font-serif italic text-xl text-[#ffd166]">La Noche Estrellada</span>
+          <mat-icon class="text-lg">flare</mat-icon>
+        </div>
+
+        <p class="text-xs text-[#9bb0d8] tracking-wider uppercase font-medium">
+          Dedicado con amor eterno · Saint-Rémy & Arles · 1889 - 2026
+        </p>
+
+        <div class="pt-2 text-[11px] text-[#7188b5]">
+          Para la mujer que ilumina mi noche: eres, fuiste y serás por siempre mi mayor obra de arte.
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+}

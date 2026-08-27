@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <title>Aranxita · Eres una Obra de Arte</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Una dedicatoria de amor y honor a Aranxita inspirada en la acuarela fina y La Noche Estrellada de Vincent van Gogh." />
+    <meta property="og:title" content="Aranxita · Eres una Obra de Arte" />
+    <meta property="og:description" content="Una dedicatoria de amor en acuarela y óleo postimpresionista." />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Marcellus&family=Pinyon+Script&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#faf6f0] text-[#2d2424] antialiased selection:bg-[#f28482]/30 selection:text-[#5a2a35] overflow-x-hidden">
+    <!-- SVG Filters for realistic watercolor paper and bleeding pigment borders -->
+    <svg class="sr-only" aria-hidden="true" width="0" height="0">
+      <defs>
+        <!-- Organic watercolor edge filter -->
+        <filter id="watercolor-edge" x="-10%" y="-10%" width="120%" height="120%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="4" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="8" xChannelSelector="R" yChannelSelector="G" result="displaced" />
+          <feGaussianBlur in="displaced" stdDeviation="0.8" result="blurred" />
+          <feMerge>
+            <feMergeNode in="blurred" />
+            <feMergeNode in="SourceGraphic" opacity="0.9" />
+          </feMerge>
+        </filter>
+        
+        <!-- Soft bleeding wash filter -->
+        <filter id="watercolor-wash" x="-20%" y="-20%" width="140%" height="140%">
+          <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="3" result="noise" />
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
+          <feGaussianBlur stdDeviation="1.5" />
+        </filter>
+
+        <!-- Paper grain filter -->
+        <filter id="paper-texture">
+          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0.95   0 0 0 0 0.93   0 0 0 0 0.89  0 0 0 0.08 0" />
+          <feBlend in="SourceGraphic" mode="multiply" />
+        </filter>
+      </defs>
+    </svg>
+
+    <app-root></app-root>
+  </body>
+</html>
